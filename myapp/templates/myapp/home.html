@@ -1,0 +1,45 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Portfolio</title>
+    <link rel="stylesheet" href="{% static 'myapp/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+<body>    
+    <body>
+        <div class="logo">SoniFy</div>
+    </body>
+    
+    <div class="container">     
+            <h2>Your Portfolio</h2>
+        </header>
+
+        <div class="dropdown-container">
+            <select id="cryptoDropdown" class="dropdown">
+                {% for crypto in top_cryptos %}
+                    <option value="{{ crypto.id }}">{{ crypto.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="number" id="cryptoAmount" class="crypto-amount-input" placeholder="Amount">
+            <button class="add-button">Add to Portfolio</button>
+            <button id="muteButton" class="mute-button muted">
+                <i class="fas fa-volume-mute"></i><span>Mute</span>
+            </button>
+            
+        
+        </div>
+        
+        <div id="portfolioContainer">
+            <!-- Added cryptocurrencies will be printed here -->
+            <div id="portfolioContainer"></div>
+        </div>
+                
+    </div>
+    <script src="{% static 'myapp/script.js' %}"></script>
+</body>
+</html>

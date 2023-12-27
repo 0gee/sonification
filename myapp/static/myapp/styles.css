@@ -1,0 +1,398 @@
+body {
+    background-color: #333333;
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+    margin: 0;  
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.muteButton {
+    position: fixed;
+    top: 30px;
+    right: 50px;
+    background-color: #951d0d; /* Mute button color */
+    padding: 10px 20px;
+    z-index: 1000; /* Ensures the button is clickable above other content */
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+}
+
+/* ... remaining styles ... */
+.logo {
+    position: absolute;
+    top: 30px; /* Adjust as per padding from top of the page */
+    left: 50px; /* Adjust as per padding from the left side of the page */
+    font-family: 'Arial', sans-serif; /* Choose a font that matches your design */
+    font-size: 32px; /* Adjust the size as needed */
+    font-weight: bold; /* Make the logo bold */
+    color: #F7931A; /* The color of the text from the screenshot */
+    z-index: 10; /* Ensure it's above other content */
+}
+
+/* Responsive adjustments for mobile devices */
+@media (max-width: 768px) {
+    .logo {
+        font-size: 24px; /* Smaller font size for mobile devices */
+        top: 5px; /* Less padding from top */
+        left: 5px; /* Less padding from left */
+    }
+}
+
+
+.header {
+    position: relative; /* or use 'position: fixed;' to keep it in view during scroll */
+}
+
+.header h1 {
+    color: #F8B400; /* Color for the 'SoniFy' text */
+    margin: 0;
+}
+
+.header h2 {
+    color: #ffffff; /* Color for the 'Your Portfolio' text */
+    margin: 10px 0 30px;
+}
+
+/* ... other styles ... */
+
+/* ... other styles ... */
+
+/* ... other styles ... */
+
+/* Adjust the dropdown-container */
+.dropdown-container {
+    display: flex;
+    justify-content: center; /* Center the buttons */
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 10px; /* Add padding to create space from the container edges */
+}
+
+/* Style the dropdown to be twice as wide as the add-button */
+.dropdown {
+    flex-grow: 3; /* Allows the dropdown to grow twice the size of the add-button */
+    padding: 10px 15px;
+    margin-right: 10px; /* Margin between dropdown and add-button */
+    border: 1px solid #ffffff;
+    border-radius: 8px;
+    background-color: #333333;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    box-sizing: border-box; /* Include padding and border in the width calculation */
+}
+
+/* Ensure the add-button has a flex-basis set */
+.add-button {
+    flex-grow: 1; /* Allows the add-button to grow and take available space */
+    padding: 10px 15px;
+    background-color: #F7931A;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-sizing: border-box; /* Include padding and border in the width calculation */
+}
+
+.add-button:hover {
+    background-color: #e89c05; /* Darker shade for hover effect */
+}
+
+/* ... remaining styles ... */
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .dropdown-container {
+        flex-direction: column;
+    }
+
+    .dropdown, .add-button {
+        width: auto; /* Let the width be determined by the content size */
+        margin-top: 10px; /* Add top margin for stacking */
+        margin-right: 0; /* Reset the right margin */
+    }
+
+    .add-button {
+        margin-top: 20px; /* Additional space between dropdown and button when stacked */
+    }
+}
+
+/* ... existing styles ... */
+
+/* ... existing styles ... */
+
+/* ... other styles ... */
+
+.remove-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px; /* You can adjust the padding as needed */
+    color: #fff; /* Set the color of the bin icon */
+    font-size: 18px; /* Adjust the size of the icon as needed */
+}
+
+/* Change color on hover for visual feedback */
+.remove-button:hover {
+    color: #e74c3c; /* Change the color on hover to indicate it's clickable */
+}
+
+
+#portfolioContainer {
+    margin-top: 20px;
+    color: #ffffff;
+}
+
+.container {
+    width: 90%; /* Increase width percentage for larger appearance */
+    max-width: 1200px; /* Set a max-width to prevent it from becoming too wide on large screens */
+    padding: 20px; /* Add more padding if needed */
+    margin: auto; /* Center the container */
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center children horizontally */
+    border-radius: 8px; /* Optional border radius for aesthetics */
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+    margin-top: 100px; /* Add margin at the top to push the container down */
+}
+
+/* Responsiveness */
+@media (max-width: 1200px) {
+    .container {
+        width: 95%;
+    }
+
+    .dropdown-container {
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+
+    .dropdown, .add-button {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .add-button {
+        margin-top: 20px;
+    }
+}
+
+/* ... existing styles ... */
+
+.portfolio-item {
+    background-color: #525252;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    margin-bottom: 10px; /* Space between items */
+    width: 100%; /* Full width of the parent container */
+}
+
+
+/* Assign fixed widths to the elements */
+.portfolio-item .crypto-name {
+    width: 120px; /* Fixed width */
+    padding: 5px 10px;
+    margin-right: 10px; /* Space between elements */
+    text-align: center;
+    background-color: #333;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.portfolio-item .crypto-amount {
+    width: 60px; /* Fixed width */
+    padding: 5px 10px;
+    margin-right: 10px; /* Space between elements */
+    text-align: center;
+    background-color: #333;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.portfolio-item .slider {
+    width: 300px; /* Fixed width */
+    margin-right: 10px; /* Space between elements */
+}
+
+.portfolio-item .remove-button {
+    width: 30px; /* Fixed width for the bin icon */
+    padding: 5px;
+    margin-left: 10px; /* Space to the left of the bin icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Example media query for larger screens if you want to extend the items further */
+@media (min-width: 768px) {
+    .portfolio-item {
+        width: 90%; /* Or any other width you prefer */
+        max-width: 600px; /* Maximum width */
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+
+/* ... remaining styles ... */
+
+/* ... existing styles ... */
+
+.portfolio-container {
+    margin-top: 20px;
+}
+
+.portfolio-item {
+    background-color: #525252;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.crypto-name {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 8px;
+}
+
+.crypto-amount {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    margin-left: 10px;
+    border-radius: 8px;
+    width: 100px; /* Adjust as necessary */
+}
+
+/* ... remaining styles ... */
+
+.crypto-amount-input {
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: 1px solid #ffffff;
+    border-radius: 8px;
+    background-color: #333333;
+    color: #ffffff;
+    width: 100px; /* Adjust as needed */
+    font-size: 16px;
+}
+
+
+/* ... existing styles ... */
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.mute-button {
+    position: fixed; /* Fixed position to keep it in place while scrolling */
+    top: 30px; /* Adjust the value as needed */
+    right: 50px; /* Adjust the value as needed */
+    background-color: #D9534F; /* Red color when muted */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px; /* Circular ends */
+    display: flex;
+    cursor: pointer;
+    transition: #30405F 0.3s; /* Smooth transition for background color */
+}
+
+.mute-button i {
+    margin-right: 5px; /* Space between icon and text */
+}
+
+.mute-button:not(.muted) {
+    background-color: #5CB85C; /* Green color when unmuted */
+}
+
+.mute-button:not(.muted) i:before {
+    content: "\f028"; /* Font Awesome icon code for unmuted volume */
+}
+
+/* Styles for the slider track */
+.slider {
+    -webkit-appearance: none; /* Override default appearance for WebKit browsers */
+    appearance: none;
+    width: 300px; /* Set a fixed width for your slider */
+    height: 20px; /* Set a fixed height for your slider track */
+    background: linear-gradient(to right, #007bff 50%, #30405F 50%); /* Initial gradient background */
+    border-radius: 4px; /* Slightly rounded edges for the thumb */
+}
+
+/* Styles for the slider thumb */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px; /* Width of the thumb */
+    height: 20px; /* Height of the thumb, should match track height for square look */
+    background: #ffffff;
+    border-radius: 0; /* Square edges for the thumb */
+    cursor: pointer;
+    margin-top: -1px; /* Align the thumb with the track */
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border: 1px solid #000000;
+    border-radius: 0; /* Square edges for the thumb */
+    cursor: pointer;
+}
+
+.slider::-ms-thumb {
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border: 1px solid #000000;
+    border-radius: 4px; /* Slightly rounded edges for the thumb */
+
+}
+
+/* For the track in IE */
+.slider::-ms-track {
+    width: 100%;
+    height: 20px;
+    background: transparent;
+    border-color: transparent;
+    border-width: 20px 0;
+    color: transparent;
+}
+
+.slider::-ms-fill-lower {
+    background: #007bff;
+    border-radius: 0;
+}
+
+.slider::-ms-fill-upper {
+    background: #30405F;
+    border-radius: 0;
+}
