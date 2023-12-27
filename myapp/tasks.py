@@ -3,6 +3,7 @@ from .views import *
 import time
 import redis
 import random 
+import requests
 
 cache = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
 
@@ -11,7 +12,7 @@ def get_crypto_prices():
     print("start")
     crypto_ids = []
     time.sleep(30)
-    top_crypto = get_top_cryptos_from_coinmarketcap()
+    top_crypto = get_top_cryptos_from_coingecko()
     count = 1
     for symbol,price in top_crypto.items():
         if count % 4 == 0:
@@ -33,10 +34,10 @@ def get_crypto_prices():
 
         cache.set(f'{id}_price', price)
         cache.set(f'{id}_std_dev', std_dev_returns)
-
+        
         cache.delete('crypto_ids')  # Clear existing list
         cache.rpush('crypto_ids', *crypto_ids)
-
+        print("crypto_ids",crypto_ids)
 
 
 
@@ -64,21 +65,26 @@ def bounds_calculation():
 
 @shared_task
 def check_price_sensitivity():
+    portfolio_data = cache.get('global_portfolio')
+ 
+    portfolio = json.loads(portfolio_data)  # Convert the JSON string back to a dictionary
+
+    print(portfolio)
     crypto_ids = cache.lrange('crypto_ids', 0, -1)
 
-    for specific_id in crypto_ids:
+    for coin_name, details in portfolio.items():
+        specific_id = map_frontend_coin_to_backend_coin(coin_name)
         # Retrieve the stored values for each cryptocurrency
+        print("specific_id", specific_id)
         original_price = float(cache.get(f'{specific_id}_price'))
         std_dev_returns = float(cache.get(f'{specific_id}_std_dev'))
-        sensitivity = 3  # Assuming maximum sensitivity for demonstration
+        sensitivity = details.get('sensitivity')  # Assuming maximum sensitivity for demonstration
+        amount = details.get('amount', 0)
+        print("amount", amount)
+        print("sensitvity", sensitivity)
+        print("returns", std_dev_returns)
 
-        # Calculate the bounds based on sensitivity
-        if sensitivity == 1:  # Low sensitivity
-            threshold = 2 * std_dev_returns
-        elif sensitivity == 2:  # Medium sensitivity
-            threshold = 1 * std_dev_returns
-        else:  # High sensitivity
-            threshold = 0.5 * std_dev_returns
+        threshold = float(sensitivity) * std_dev_returns
 
         upper_bound, lower_bound = calculate_btc_future_bounds(original_price, threshold)
 
@@ -96,7 +102,3 @@ def check_price_sensitivity():
             print(f"{specific_id} price is within bounds.")
 
         print(f"{specific_id} - Upper Bound: {upper_bound}, Lower Bound: {lower_bound}, Sensitivity: {sensitivity}")
-
-@shared_task
-def get_crypto():
-    print("Hello World")

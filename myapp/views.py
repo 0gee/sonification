@@ -5,26 +5,33 @@ from datetime import datetime, timedelta
 import logging
 import time
 from django.http import HttpResponse
+import redis
+import json
+
+cache = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
+
 
 def home(request):
     top_crypto_prices = get_top_cryptos_prices()
     return render(request, 'myapp/home.html', {'top_cryptos': top_crypto_prices})
 
 def get_top_cryptos_prices():
-    url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
-    parameters = {
-        'start': '1',
-        'limit': '10',
-        'convert': 'USD'
-    }
-    headers = {
-        'Accepts': 'application/json',
-        'X-CMC_PRO_API_KEY': 'ec2dbebc-4ef4-431d-82bc-c8a3fadb66f0',
+    url = "https://api.coingecko.com/api/v3/coins/markets"
+    params = {
+        'vs_currency': 'usd',
+        'order': 'market_cap_desc',
+        'per_page': 10,
+        'page': 1,
+        'sparkline': False
     }
 
-    response = requests.get(url, headers=headers, params=parameters)
-    data = response.json()
-    return data['data']
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        response.raise_for_status()
+
 
 def map_symbol_to_coingecko_id(symbol):
    symbol = symbol.lower()
@@ -34,6 +41,15 @@ def map_symbol_to_coingecko_id(symbol):
                'link': 'chainlink', 'ton': 'the-open-network', 'matic': 'matic-network', 
                'wbtc': 'wrapped-bitcoin', 'shib': 'shiba-inu', 'dai': 'dai', 'ltc': 'litecoin'}
    return mapping.get(symbol.lower())
+
+
+
+def map_frontend_coin_to_backend_coin(coin):
+    symbol = coin.lower()
+    mapping = {'bitcoin': 'bitcoin','ethereum': 'ethereum', 'tether': 'tether',
+               'bnb' : 'binancecoin', 'solana': 'solana', 'xrp' : 'ripple', 'usdc' : 'usd-coin', 
+                'cardano' : 'cardano', 'lido staked ether' : 'staked-ether', 'avalanche' : 'avalanche-2'}
+    return mapping.get(symbol.lower())
 
 
 def get_top_cryptos():
@@ -131,6 +147,34 @@ def get_top_cryptos_from_coinmarketcap():
 
     return cryptos
 
+import requests
+
+def get_top_cryptos_from_coingecko():
+    url = "https://api.coingecko.com/api/v3/coins/markets"
+    parameters = {
+        'vs_currency': 'usd',
+        'order': 'market_cap_desc',
+        'per_page': 10,
+        'page': 1,
+        'sparkline': False,
+    }
+
+    response = requests.get(url, params=parameters)
+
+    if response.status_code != 200:
+        response.raise_for_status()
+
+    data = response.json()
+
+    cryptos = {}
+    for crypto in data:
+        symbol = crypto['symbol'].lower()  # Standard symbol like 'btc', 'eth'
+        price = crypto['current_price']
+        cryptos[symbol] = price
+
+    return cryptos
+
+
 def get_latest_crypto_price(crypto_id):
     # Construct the URL for the CoinGecko API endpoint
     # Replace 'bitcoin' with the appropriate crypto_id
@@ -157,15 +201,73 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+def manage_user_portfolio(request, action, crypto_name, amount=None, sensitivity=None):
+    # Initialize portfolio in session if not present
+    if 'user_portfolio' not in request.session:
+        request.session['user_portfolio'] = {}
+
+    portfolio = request.session['user_portfolio']
+
+    if action == 'add' and crypto_name != 'undefined':
+        portfolio[crypto_name] = {
+            'amount': amount,
+            'sensitivity': portfolio.get(crypto_name, {}).get('sensitivity', 1.0)  # default sensitivity
+        }
+    if action == 'update_sensitivity' and portfolio[crypto_name] != 'undefined':
+        if crypto_name in portfolio:
+            portfolio[crypto_name]['sensitivity'] = sensitivity
+    if action == 'delete':
+        del portfolio[crypto_name]
+
+    request.session['user_portfolio'] = portfolio  # Update the session
+    print("Current User Portfolio:", portfolio)
+    cache.set('global_portfolio', json.dumps(portfolio))  # Convert the portfolio dictionary to a JSON string
+
+
+
 @csrf_exempt
 def update_portfolio(request):
     if request.method == 'POST':
         crypto_name = request.POST.get('crypto_name')
         amount = request.POST.get('amount')
+
+        manage_user_portfolio(request, 'add', crypto_name, amount=amount)
         
-        print(f"Received crypto_name={crypto_name} and amount={amount}")
 
         return JsonResponse({'status': 'success', 'message': 'Portfolio updated'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
+
+
+@csrf_exempt
+def update_sensitivity(request):
+    if request.method == 'POST':
+        crypto_name = request.POST.get('crypto_name')
+        sensitivity = request.POST.get('sensitivity')
+        
+        manage_user_portfolio(request, 'update_sensitivity', crypto_name, sensitivity=sensitivity)
+
+        return JsonResponse({'status': 'success', 'message': 'Sensitivity updated'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+# views.py
+
+@csrf_exempt
+def delete_crypto(request):
+    if request.method == 'POST':
+        crypto_name = request.POST.get('crypto_name')
+        
+        manage_user_portfolio(request, 'delete', crypto_name)
+
+
+        return JsonResponse({'status': 'success', 'message': 'Crypto deleted'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+# Django view to get the current portfolio
+def get_portfolio(request):
+    portfolio = request.session.get('user_portfolio', {})
+    return JsonResponse(portfolio)

@@ -131,7 +131,7 @@ CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_BEAT_SCHEDULE = {
     'refresh_crypto_prices_every_10_seconds': {
         'task': 'myapp.tasks.get_crypto_prices',
-        'schedule': crontab(hour=23, minute=18),
+        'schedule': crontab(hour=18, minute=47),
     },
     'run_bounds_calculation_every_5_minutes': {
         'task': 'myapp.tasks.check_price_sensitivity',
